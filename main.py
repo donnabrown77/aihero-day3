@@ -231,18 +231,24 @@ chat_messages = [
 
 
 
-
+# Wrap everything inside one dictionary with a "type" and "function" key
 text_search_tool = [
-    {"type": "function"},
-    {"name": "text_search"},
-    {"description": "Search github documents for relevant information based on a query."},
-    {"parameters": {
-        "type": "object",
-        "properties": {
-            "query": query
-        },
-        "required": ["query"],
-        "additionalProperties": False
+    {
+        "type": "function", # This is the 'type' the error was looking for
+        "function": {
+            "name": "text_search",
+            "description": "Search github documents for relevant information based on a query.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "The search query for GitHub documents"
+                    }
+                },
+                "required": ["query"],
+                "additionalProperties": False
+            }
         }
     }
 ]
