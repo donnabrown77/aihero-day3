@@ -167,6 +167,7 @@ q = embedding_model.encode(query)
 vector_results = faq_vindex.search(q, num_results=5)
 
 final_results = text_results + vector_results
+print(text_results)
 
 
 system_prompt = """
@@ -231,29 +232,6 @@ chat_messages = [
 
 
 
-# Wrap everything inside one dictionary with a "type" and "function" key
-text_search_tool = [
-    {
-        "type": "function", # This is the 'type' the error was looking for
-        "function": {
-            "name": "text_search",
-            "description": "Search github documents for relevant information based on a query.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "query": {
-                        "type": "string",
-                        "description": "The search query for GitHub documents"
-                    }
-                },
-                "required": ["query"],
-                "additionalProperties": False
-            }
-        }
-    }
-]
-
-
 async def run_groq_agent_task(prompt: str, model_name: str = "llama-3.3-70b-versatile"):
     """
     An async function to interact with the Groq API.
@@ -267,7 +245,22 @@ async def run_groq_agent_task(prompt: str, model_name: str = "llama-3.3-70b-vers
         completion =  await client.chat.completions.create  ( 
             model=model_name,
             messages=chat_messages,
-            tools=text_search_tool
+            tools = [
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "text_search",
+                        "description": "Perform a text-based search on the FAQ index.",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "query": {"type": "string", "description": "The search query"}
+                            },
+                            "required": ["query"],
+                        },
+                    },
+                }
+            ]
         )
         return completion.choices[0].message.content 
 
@@ -279,14 +272,6 @@ async def main():
     response = await run_groq_agent_task(question) 
     print(f"Groq Response: {response}")
 
-    # Example of running multiple tasks concurrently with asyncio.gather()
-    # print("\nRunning multiple tasks concurrently...")
-    # responses = await asyncio.gather(
-    #     run_groq_agent_task("What is the capital of France?"),
-    #     run_groq_agent_task("What is the largest planet in our solar system?")
-    # )
-    # for res in responses:
-    #     print(f"- {res}")
 
 # Start the asyncio event loop
 if __name__ == "__main__":
