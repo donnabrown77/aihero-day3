@@ -1,0 +1,16 @@
+    [project]
+    name = "project"
+    version = "0.1.0"
+    description = "Three types of search for my AI system: Text search for exact keyword matches, Vector search for semantic similarity, Hybrid search combining both approaches."
+    readme = "README.md"
+    requires-python = ">=3.12"
+    dependencies = [
+        "minsearch>=0.0.7",
+        "pydantic-ai>=1.52.0",
+        "python-frontmatter>=1.1.0",
+        "requests>=2.32.5",
+]
+    [dependency-groups]
+    dev = [
+        "jupyter>=1.1.1",
+    ]
