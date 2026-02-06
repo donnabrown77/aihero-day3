@@ -250,11 +250,6 @@ async def main() -> None:
         print(chat_completion.id)
         print(chat_completion.choices[0].message.content)
 
-    # # Example of running a single task
-    # response = await run_groq_agent_task(question) 
-    # print(f"Groq Response: {response}")
-
-
 
 
 # Start the asyncio event loop
