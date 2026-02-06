@@ -232,45 +232,29 @@ chat_messages = [
 
 
 
-async def run_groq_agent_task(prompt: str, model_name: str = "llama-3.3-70b-versatile"):
-    """
-    An async function to interact with the Groq API.
-    """
-    # Use DefaultAioHttpClient for async operations
-    async with AsyncGroq(
-        api_key=os.environ.get("GROQ_API_KEY"),
-        http_client=DefaultAioHttpClient(), 
-    ) as client:
-        # Perform an async chat completion
-        completion =  await client.chat.completions.create  ( 
-            model=model_name,
-            messages=chat_messages,
-            tools = [
-                {
-                    "type": "function",
-                    "function": {
-                        "name": "text_search",
-                        "description": "Perform a text-based search on the FAQ index.",
-                        "parameters": {
-                            "type": "object",
-                            "properties": {
-                                "query": {"type": "string", "description": "The search query"}
-                            },
-                            "required": ["query"],
-                        },
-                    },
-                }
-            ]
-        )
-        return completion.choices[0].message.content 
 
-async def main():
+
+
+async def main() -> None:
     """
     Main entry point to run our async agent tasks.
     """
-    # Example of running a single task
-    response = await run_groq_agent_task(question) 
-    print(f"Groq Response: {response}")
+    async with AsyncGroq(
+        api_key=os.environ.get("GROQ_API_KEY"),  # This is the default and can be omitted
+        http_client=DefaultAioHttpClient(),
+    ) as client:
+        chat_completion = await client.chat.completions.create(
+            messages=chat_messages,
+            model="llama-3.3-70b-versatile",
+        )
+        print(chat_completion.id)
+        print(chat_completion.choices[0].message.content)
+
+    # # Example of running a single task
+    # response = await run_groq_agent_task(question) 
+    # print(f"Groq Response: {response}")
+
+
 
 
 # Start the asyncio event loop
